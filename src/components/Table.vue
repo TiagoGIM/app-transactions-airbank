@@ -1,83 +1,101 @@
-<script setup lang="ts">
-
-
-</script>
 <template>
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th scope="col" class="px-6 py-3">
-                    Product name
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Color
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Category
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Price
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    <span class="sr-only">Edit</span>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                    Apple MacBook Pro 17"
-                </th>
-                <td class="px-6 py-4">
-                    Sliver
-                </td>
-                <td class="px-6 py-4">
-                    Laptop
-                </td>
-                <td class="px-6 py-4">
-                    $2999
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                </td>
-            </tr>
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                    Microsoft Surface Pro
-                </th>
-                <td class="px-6 py-4">
-                    White
-                </td>
-                <td class="px-6 py-4">
-                    Laptop PC
-                </td>
-                <td class="px-6 py-4">
-                    $1999
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                </td>
-            </tr>
-            <tr class="bg-white dark:bg-gray-800">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                    Magic Mouse 2
-                </th>
-                <td class="px-6 py-4">
-                    Black
-                </td>
-                <td class="px-6 py-4">
-                    Accessories
-                </td>
-                <td class="px-6 py-4">
-                    $99
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-  
+  <n-data-table
+    :columns="collumns"
+    :data="data"
+    :pagination="pagination"
+    :bordered="false"
+  />
 </template>
+
+<script setup lang="ts">
+import { computed, h } from 'vue'
+import { NButton, DataTableColumns } from 'naive-ui'
+import { useQuery } from '@vue/apollo-composable'
+import gql from 'graphql-tag';
+
+
+
+const createColumns = ({
+  play
+}: {
+  play: (row: Transaction) => void
+}): DataTableColumns<Transaction> => {
+  return [
+    {
+      title: 'Id',
+      key: 'id'
+    },
+    {
+      title: 'account',
+      key: 'account'
+    },
+        {
+      title: 'description',
+      key: 'description'
+    },
+    {
+      title: 'date',
+      key: 'transactionDate'
+    },
+    {
+      title: 'Action',
+      key: 'actions',
+      render (row) {
+        return h(
+          NButton,
+          {
+            strong: true,
+            tertiary: true,
+            size: 'small',
+            onClick: () => play(row)
+          },
+          { default: () => 'Play' }
+        )
+      }
+    }
+  ]
+}
+
+const collumns = createColumns({
+  play: (row: Transaction) => {
+    console.log(row)
+  }
+})
+
+const transactionsQuery = gql`
+query GetTransactionByDate($transactionDateInit: String, $transactionDateEnd: String) {
+  getTransactionByDate(transactionDateInit: $transactionDateInit, transactionDateEnd: $transactionDateEnd) {
+    id
+    account
+    description
+    transactionDate
+  }
+}
+`
+const {result, loading, error} = useQuery(transactionsQuery, {
+  variables: {
+    transactionDateInit: '2020-01-01',
+    transactionDateEnd: '2020-01-31'
+  }
+});
+
+const dataResulted = computed(() => {
+  if (loading.value) return []
+  if (error.value) return []
+  return result.value.getTransactionByDate
+})
+
+
+type Transaction = {
+  id: string,
+  account: string
+  description: string
+  transactionDate: string
+}
+
+const data: Transaction[] = dataResulted.value || [];
+
+const pagination = {
+        pageSize: 10
+      }
+</script>
