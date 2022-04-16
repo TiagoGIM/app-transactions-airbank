@@ -3,12 +3,18 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import NavBar from '@/components/NavBar.vue';
 import Table from '@/components/Table.vue';
-
+import { ref } from 'vue';
+const placement = ref('top-right')
 </script>
 
 <template>
+<n-loading-bar-provider>
+<n-message-provider :placement="placement">
+
 <NavBar/>
 <Table></Table>
+</n-message-provider>
+</n-loading-bar-provider>
 </template>
 
 <style>

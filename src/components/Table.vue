@@ -1,55 +1,70 @@
 <template>
+  <n-date-picker
+    v-model:value="daterange"
+    type="daterange"
+    @update:value="onChange"
+    placement="bottom"
+  />
+<n-dialog-provider>
+  
+</n-dialog-provider>
+  <p v-if="loading">loading...</p>
+
   <n-data-table
+    v-else
     :columns="collumns"
-    :data="data"
+    striped
+    :loading="loading"
+    :data="result.getTransactionByDate"
     :pagination="pagination"
     :bordered="false"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, h } from 'vue'
-import { NButton, DataTableColumns } from 'naive-ui'
+import { computed, h, reactive, ref } from 'vue'
+import { DataTableColumns } from 'naive-ui'
 import { useQuery } from '@vue/apollo-composable'
-import gql from 'graphql-tag';
+import { GETTRANSACTIONSBYDATE } from '../api/api-graphql';
+import { useMessage} from 'naive-ui'
+import MyDialog from '@/components/MyDialog.vue'
+const daterange = ref(null)
 
-
+const message = useMessage()
 
 const createColumns = ({
-  play
+  getDetails
 }: {
-  play: (row: Transaction) => void
+  getDetails
+: (row: Transaction) => void
 }): DataTableColumns<Transaction> => {
   return [
     {
-      title: 'Id',
-      key: 'id'
-    },
-    {
-      title: 'account',
+      title: 'Account',
       key: 'account'
     },
         {
-      title: 'description',
+      title: 'Description',
       key: 'description'
     },
     {
-      title: 'date',
+      title: 'Date',
       key: 'transactionDate'
+    },
+        {
+      title: 'Amount',
+      key: 'amount'
     },
     {
       title: 'Action',
       key: 'actions',
       render (row) {
         return h(
-          NButton,
+          MyDialog ,
           {
-            strong: true,
-            tertiary: true,
-            size: 'small',
-            onClick: () => play(row)
+           transaction:row
           },
-          { default: () => 'Play' }
+          { default: () => 'Details' }
         )
       }
     }
@@ -57,32 +72,27 @@ const createColumns = ({
 }
 
 const collumns = createColumns({
-  play: (row: Transaction) => {
-    console.log(row)
+  getDetails: (row: Transaction) => {
   }
 })
 
-const transactionsQuery = gql`
-query GetTransactionByDate($transactionDateInit: String, $transactionDateEnd: String) {
-  getTransactionByDate(transactionDateInit: $transactionDateInit, transactionDateEnd: $transactionDateEnd) {
-    id
-    account
-    description
-    transactionDate
-  }
-}
-`
-const {result, loading, error} = useQuery(transactionsQuery, {
-  variables: {
-    transactionDateInit: '2020-01-01',
-    transactionDateEnd: '2020-01-31'
-  }
-});
 
-const dataResulted = computed(() => {
-  if (loading.value) return []
-  if (error.value) return []
-  return result.value.getTransactionByDate
+const dateToSearch = reactive({
+    transactionDateInit: '',
+    transactionDateEnd: ''
+})
+
+const onChange = (e: any) => {
+dateToSearch.transactionDateInit = new Date(e[0]).toISOString();
+dateToSearch.transactionDateEnd = new Date(e[1]).toISOString();
+console.table(dateToSearch)
+console.log("Doing a new search")
+}
+
+
+const {result, loading, error} = useQuery(GETTRANSACTIONSBYDATE ,dateToSearch )
+const data = computed(() : Transaction[] => {
+  return result.value?.getTransactionByDate || []
 })
 
 
@@ -93,7 +103,6 @@ type Transaction = {
   transactionDate: string
 }
 
-const data: Transaction[] = dataResulted.value || [];
 
 const pagination = {
         pageSize: 10
