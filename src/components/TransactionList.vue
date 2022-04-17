@@ -82,7 +82,8 @@ const createColumns = ({
 };
 
 const rowClassName = (row: Transaction, index: number) => {
-  if (row.amount > "0") {
+  console.table(row);
+  if (row.amount > 0) {
     return "negative";
   }
   return "";
@@ -102,13 +103,12 @@ const onChange = (e: any) => {
     dateToSearch.transactionDateInit = new Date(e[0]).toISOString();
     dateToSearch.transactionDateEnd = new Date(e[1]).toISOString();
   } catch (e) {
-    message.error("some date need be picked");
+   if(!e) message.error("some date need be picked");
   }
 };
 
 const { result, loading, error } = useQuery(GETTRANSACTIONSBYDATE, dateToSearch);
 const data = computed((): Transaction[] => {
-  console.log(loading.value);
   if (!loading.value) loadingBar.start();
   return result.value?.getTransactionByDate || [];
 });
@@ -118,7 +118,7 @@ type Transaction = {
   account: string;
   description: string;
   transactionDate: string;
-  amount: string;
+  amount: number;
 };
 
 const pagination = {

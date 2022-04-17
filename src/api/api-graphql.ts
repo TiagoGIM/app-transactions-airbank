@@ -6,8 +6,12 @@ query GetTransactionByDate($transactionDateInit: String, $transactionDateEnd: St
     id
     account
     description
-    transactionDate
+    category
+    reference
+    currency
     amount
+    status
+    transactionDate
   }
 }
 `;
