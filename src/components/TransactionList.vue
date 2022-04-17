@@ -1,18 +1,19 @@
 <template>
-  <n-space justify="center" vertical>
-    <n-layout-header >
-      <n-layout-content content-style="padding: 10px ">
-        <n-h3 >filter by  date range</n-h3>
-      </n-layout-content>
-      <n-layout-content content-style="padding: 2px 250px 24px 250px;">
-        <n-date-picker
-          v-model:value="daterange"
-          type="daterange"
-          @update:value="onChange"
-          placement="bottom"
-        />
-      </n-layout-content>
-    </n-layout-header>
+  <n-space justify="center" align="center" item-style="margin: 18px 0px">
+    <n-layout-content>
+      <n-h3>
+        <n-text type="tertiary"> Select by date </n-text>
+      </n-h3>
+      
+    </n-layout-content>
+    <n-layout-content>
+      <n-date-picker
+        v-model:value="daterange"
+        type="daterange"
+        @update:value="onChange"
+        placement="bottom"
+      />
+    </n-layout-content>
   </n-space>
   <div v-if="loading">
     <SkellthonTable></SkellthonTable>
@@ -131,5 +132,9 @@ const pagination = {
 }
 :deep(.amountClass) {
   color: rgba(0, 128, 0, 0.75) !important;
+}
+.n-h3 {
+  margin-bottom: 0!important;
+   background-color: #242427;
 }
 </style>
