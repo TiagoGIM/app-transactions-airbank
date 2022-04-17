@@ -1,0 +1,135 @@
+<template>
+  <n-space justify="center" vertical>
+    <n-layout-header >
+      <n-layout-content content-style="padding: 10px ">
+        <n-h3 >filter by  date range</n-h3>
+      </n-layout-content>
+      <n-layout-content content-style="padding: 2px 250px 24px 250px;">
+        <n-date-picker
+          v-model:value="daterange"
+          type="daterange"
+          @update:value="onChange"
+          placement="bottom"
+        />
+      </n-layout-content>
+    </n-layout-header>
+  </n-space>
+  <div v-if="loading">
+    <SkellthonTable></SkellthonTable>
+  </div>
+  <n-data-table
+    v-else
+    :columns="collumns"
+    striped
+    :loading="loading"
+    :data="result.getTransactionByDate"
+    :pagination="pagination"
+    :bordered="false"
+    :row-class-name="rowClassName"
+  />
+</template>
+
+<script setup lang="ts">
+import { computed, h, reactive, ref } from "vue";
+import { DataTableColumns } from "naive-ui";
+import { useQuery } from "@vue/apollo-composable";
+import { GETTRANSACTIONSBYDATE } from "../api/api-graphql";
+import { useMessage, useLoadingBar } from "naive-ui";
+import ModalDetail from "@/components/ModalDetail.vue";
+import SkellthonTable from "./SkellthonTable.vue";
+const daterange = ref(null);
+const message = useMessage();
+const loadingBar = useLoadingBar();
+
+const createColumns = ({
+  rowClassName,
+}: {
+  rowClassName: (row: Transaction, index: number) => string;
+}): DataTableColumns<Transaction> => {
+  return [
+    {
+      title: "Account",
+      key: "account",
+    },
+    {
+      title: "Description",
+      key: "description",
+    },
+    {
+      title: "Date",
+      key: "transactionDate",
+    },
+    {
+      title: "Amount",
+      key: "amount",
+      className: "amountClass",
+    },
+    {
+      title: "Action",
+      key: "actions",
+      render(row) {
+        return h(
+          ModalDetail,
+          {
+            transaction: row,
+          },
+          { default: () => "Details" }
+        );
+      },
+    },
+  ];
+};
+
+const rowClassName = (row: Transaction, index: number) => {
+  if (row.amount > "0") {
+    return "negative";
+  }
+  return "";
+};
+
+const collumns = createColumns({
+  rowClassName,
+});
+
+const dateToSearch = reactive({
+  transactionDateInit: "",
+  transactionDateEnd: "",
+});
+
+const onChange = (e: any) => {
+  try {
+    dateToSearch.transactionDateInit = new Date(e[0]).toISOString();
+    dateToSearch.transactionDateEnd = new Date(e[1]).toISOString();
+  } catch (e) {
+    message.error("some date need be picked");
+  }
+};
+
+const { result, loading, error } = useQuery(GETTRANSACTIONSBYDATE, dateToSearch);
+const data = computed((): Transaction[] => {
+  console.log(loading.value);
+  if (!loading.value) loadingBar.start();
+  return result.value?.getTransactionByDate || [];
+});
+
+type Transaction = {
+  id: string;
+  account: string;
+  description: string;
+  transactionDate: string;
+  amount: string;
+};
+
+const pagination = {
+  pageSize: 7,
+};
+</script>
+
+<style>
+:deep(.negative td) {
+  color: rgba(255, 0, 0, 0.75) !important;
+}
+:deep(.amountClass) {
+  color: rgba(0, 128, 0, 0.75) !important;
+}
+</style>

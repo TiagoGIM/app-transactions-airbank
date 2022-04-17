@@ -8,19 +8,9 @@
         mx-auto
         md:flex md:justify-between md:items-center
       "
-    >
+    ><title>AirBank</title>
       <div class="flex items-center justify-between">
-        <router-link
-          to="/"
-          class="
-            text-xl
-            font-bold
-            text-gray-100
-            md:text-2xl
-            hover:text-indigo-400
-          "
-          >Logo
-        </router-link>
+        
         <!-- Mobile menu button -->
         <div @click="toggleNav" class="flex md:hidden">
           <button
