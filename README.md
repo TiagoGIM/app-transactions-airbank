@@ -1,6 +1,6 @@
 # My Transactions AirBank FrontEnd 
 
-A simple SAP builted with VUE3 composible API and typscript to acomplishe the AirBank interview challenge.
+A simple SPA builted with VUE3 composible API and typscript to acomplishe the AirBank interview challenge.
 
 For populate the components in this app was developed a [API](https://api-airbank-transactions.herokuapp.com/api/v1) in nodeJS and APollo server Graphgql  
 
