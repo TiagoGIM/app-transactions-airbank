@@ -1,6 +1,6 @@
 # My Transactions AirBank FrontEnd 
 
-A simple SAP builted with VUE3 composible API and typscript to acomplishe the AirBank interview challenge.
+A simple SPA builted with VUE3 composible API and typscript to acomplishe the AirBank interview challenge.
 
 For populate the components in this app was developed a [API](https://api-airbank-transactions.herokuapp.com/api/v1) in nodeJS and APollo server Graphgql  
 
@@ -29,5 +29,8 @@ npm run build preview
 - [Vite CLI](https://vitejs.dev/)
 - [Vue 3](https://vuejs.org/guide/typescript/overview.html)
 - [Naiv UI](https://www.naiveui.com/en-US/dark)
+<<<<<<< HEAD
 
  <img align="center" alt="Rafa-CSS" height="30" width="40" src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D">
+=======
+>>>>>>> 1ce4acd1fb025493a421af31f99ab75cb0d70068
