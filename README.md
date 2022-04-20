@@ -29,3 +29,5 @@ npm run build preview
 - [Vite CLI](https://vitejs.dev/)
 - [Vue 3](https://vuejs.org/guide/typescript/overview.html)
 - [Naiv UI](https://www.naiveui.com/en-US/dark)
+
+ <img align="center" alt="Rafa-CSS" height="30" width="40" src="https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D">

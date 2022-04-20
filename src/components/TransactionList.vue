@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, reactive, ref } from "vue";
+import { h, reactive, ref, watch } from "vue";
 import { DataTableColumns } from "naive-ui";
 import { useQuery } from "@vue/apollo-composable";
 import { GETTRANSACTIONSBYDATE } from "../api/api-graphql";
@@ -82,7 +82,6 @@ const createColumns = ({
 };
 
 const rowClassName = (row: Transaction, index: number) => {
-  console.table(row);
   if (row.amount > 0) {
     return "negative";
   }
@@ -99,19 +98,35 @@ const dateToSearch = reactive({
 });
 
 const onChange = (e: any) => {
-  try {
+ try {
     dateToSearch.transactionDateInit = new Date(e[0]).toISOString();
     dateToSearch.transactionDateEnd = new Date(e[1]).toISOString();
-  } catch (e) {
-   if(!e) message.error("some date need be picked");
-  }
+  }catch 
+{
+  message.info("returned all transactions")
+  dateToSearch.transactionDateInit = "";
+  dateToSearch.transactionDateEnd = "";
+}
+
 };
 
 const { result, loading, error } = useQuery(GETTRANSACTIONSBYDATE, dateToSearch);
-const data = computed((): Transaction[] => {
-  if (!loading.value) loadingBar.start();
-  return result.value?.getTransactionByDate || [];
-});
+
+watch([result , loading] , ([valueR, valueL])=> {
+  
+  if(valueR?.getTransactionByDate.length === 0)
+  {
+    message.warning("No transactions were found for this period.")
+  }
+  if(valueL)
+  {
+    loadingBar.start();
+  }
+  else
+  {
+    loadingBar.finish();
+  }
+})
 
 type Transaction = {
   id: string;

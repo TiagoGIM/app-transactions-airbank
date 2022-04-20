@@ -27,12 +27,9 @@ html{ background-color: #242427; }
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
- 
   height: 100%;
 }
 .wrapper {
-  /*min-height: calc(100% - 86px); */
-  
   margin: 0 auto;
   max-width: 960px;
   min-width: 320px;
